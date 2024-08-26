@@ -29,8 +29,53 @@ const getTrips = async(req, res)=>{
     }
 }
 
+const getTrip = async (req,res)=>{
+    try{
+        const id  = parseInt(req.params.id)
+        const results = await pool.query('SELECT * FROM trips WHERE id =$1',[id])
+        res.status(200).json(results.rows[0])
+
+    }catch(error){
+        res.status(409).json({error:error.message})
+    }
+}
+
+const updateTrip = async(req,res)=>{
+    try{
+        const id = parseInt(req.params.id)
+        const { title, description, img_url, num_days, start_date, end_date, total_cost } = req.body
+        const results = await pool.query(
+            `UPDATE trips
+            SET title = $1, description = $2, img_url = $3, num_days = $4, start_date = $5, end_date = $6, total_cost= $7
+            WHERE id = $8`,
+            [title, description, img_url, num_days, start_date, end_date, total_cost, id]
+        )
+        res.status(200).json(result.rows[0])
+
+    }catch(error){
+        res.status(409).json({error:error.message})
+    }
+
+}
+
+const deleteTrip = async(req,res)=>{
+    try{
+        const id = parseInt(req.params.id)
+        const activity_deletion = await pool.query(
+            `DELETE FROM trips WHERE id = $1`, [id]
+        )
+        res.status(200).json(results.rows[0])
+
+    }catch(error){
+        res.status(409).json({error:error.message})
+    }
+}
+
 
 export default {
     createTrip,
-    getTrips
+    getTrips,
+    getTrip,
+    updateTrip,
+    deleteTrip
   }
