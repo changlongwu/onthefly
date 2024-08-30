@@ -1,18 +1,20 @@
-import React, {useState, useEffect} from 'react';
-import { useParams } from 'react-router-dom';
-import './EditTrip.css'
+import React, { useState } from 'react';
+import './CreateTrip.css'
 
-const EditTrip = ({data}) => {
+const CreateTrip = ({user, api_url}) => {
 
-    const {id} = useParams();
-    const [post, setPost] = useState({id: 0, title: "", description: "", img_url: "", num_days: 0, start_date: "", end_date: "", total_cost: 0.0 })
-
-    useEffect(() => {
-        const result = data.filter(item => item.id === parseInt(id))[0];
-        setPost({id: parseInt(result.id), title: result.title, description: result.description, img_url: result.img_url, num_days: parseInt(result.num_days), start_date: result.start_date.slice(0,10), end_date: result.end_date.slice(0,10), total_cost: result.total_cost});
-    }, [data, id]);
-
-
+    const [post, setPost] = useState({
+        id: 0,
+        title: "",
+        description: "",
+        img_url: "",
+        num_days: 0,
+        start_date: "",
+        end_date: "",
+        total_cost: 0.0,
+        username: user.username
+    })
+    
     const handleChange = (event) => {
         const {name, value} = event.target;
         setPost( (prev) => {
@@ -23,36 +25,25 @@ const EditTrip = ({data}) => {
         })
     }
     
-
-    const updatePost = async (event) => {
+    const createPost = async (event) => {
         event.preventDefault();
 
         const options = {
-            method: 'PATCH',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(post)
         }
-        
-        await fetch('/api/trips/' + id, options)
+
+        await fetch(`${api_url}/api/trips`, options)
         window.location.href = '/'
     }
 
-
-    const deletePost = async (event) => {
-        event.preventDefault();
-
-        const options = {
-            method: 'DELETE'
-        }
-        
-        await fetch('/api/trips/' + id, options)
-        window.location.href = '/'
-    }
 
     return (
         <div>
+            <center><h3> Create New Trip</h3></center>
             <form>
                 <label>Title</label> <br />
                 <input type="text" id="title" name="title" value={post.title} onChange={handleChange}/><br />
@@ -83,12 +74,10 @@ const EditTrip = ({data}) => {
                 <input type="text" id="total_cost" name="total_cost" value={post.total_cost} onChange={handleChange}/><br />
                 <br/>
 
-
-                <input type="submit" value="Submit" onClick={updatePost}/>
-                <button className="deleteButton" onClick={deletePost}>Delete</button>
+                <input type="submit" value="Submit" onClick={createPost} />
             </form>
         </div>
     )
 }
 
-export default EditTrip
+export default CreateTrip
